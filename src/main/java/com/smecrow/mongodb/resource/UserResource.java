@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
-public class userResource {
+public class UserResource {
 
     @Autowired
     private UserService service;
@@ -21,7 +21,7 @@ public class userResource {
     @RequestMapping(method = RequestMethod.GET)
     private ResponseEntity<List<UserDTO>> findAll() {
         List<User> list = service.findAll();
-        List<UserDTO> listDto = list.stream().map(x -> new UserDTO(x)).toList();
+        List<UserDTO> listDto = list.stream().map(UserDTO::new).toList();
         return ResponseEntity.ok().body(listDto);
     }
 
@@ -37,6 +37,12 @@ public class userResource {
         obj = service.insert(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    private ResponseEntity<Void> delete(@PathVariable String id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
 
